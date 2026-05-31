@@ -52,6 +52,68 @@ h1 {
     text-transform: uppercase;
 }
 
+.name-input-card {
+    background: #ffffff;
+    border-radius: 2px;
+    padding: 50px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    max-width: 500px;
+    margin: 50px auto;
+}
+
+.name-input-card h2 {
+    color: #1a1a2e;
+    margin-bottom: 15px;
+    font-size: 1.6em;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+.name-instruction {
+    color: #888;
+    margin-bottom: 25px;
+    font-size: 0.95em;
+}
+
+.name-input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    font-size: 1em;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin-bottom: 20px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.name-input:focus {
+    border-color: #c9a962;
+}
+
+.start-btn {
+    background: #1a1a2e;
+    color: #ffffff;
+    border: none;
+    padding: 16px 50px;
+    font-size: 0.95em;
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.start-btn:hover {
+    background: #c9a962;
+}
+
+header.hidden {
+    display: none;
+}
+
 .project-card {
     background: #ffffff;
     border-radius: 2px;
@@ -272,6 +334,35 @@ h1 {
     cursor: not-allowed;
 }
 
+.lead-application {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f5f5f0;
+    border-radius: 2px;
+    border-left: 3px solid #c9a962;
+}
+
+.lead-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.lead-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    cursor: pointer;
+    accent-color: #c9a962;
+}
+
+.lead-checkbox span {
+    color: #1a1a2e;
+    font-size: 0.95em;
+    font-weight: 400;
+}
+
 .results-card {
     background: #ffffff;
     border-radius: 2px;
@@ -386,6 +477,25 @@ h1 {
     color: #c9a962;
 }
 
+.lead-applicants-display {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.lead-applicants-display h4 {
+    color: #1a1a2e;
+    font-size: 1.1em;
+    font-weight: 500;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+.lead-applicants-display p {
+    color: #888;
+    font-size: 0.95em;
+}
+
 .next-btn, .restart-btn {
     background: #1a1a2e;
     color: #ffffff;
@@ -479,6 +589,26 @@ h1 {
     font-size: 1.5em;
     font-weight: 300;
     color: #1a1a2e;
+}
+
+.result-leads {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.result-leads-label {
+    color: #888;
+    font-size: 0.9em;
+}
+
+.result-leads-value {
+    font-size: 1em;
+    font-weight: 500;
+    color: #c9a962;
 }
 
 .hidden {

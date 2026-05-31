@@ -17,8 +17,18 @@
         </header>
         
         <main id="main-content">
+            <!-- Name Input View -->
+            <div id="name-input-view">
+                <div class="name-input-card">
+                    <h2>Willkommen</h2>
+                    <p class="name-instruction">Bitte geben Sie Ihren Namen ein, um zu beginnen:</p>
+                    <input type="text" id="user-name" class="name-input" placeholder="Ihr Name" maxlength="50">
+                    <button class="start-btn" id="start-btn">Starten</button>
+                </div>
+            </div>
+            
             <!-- Project View -->
-            <div id="project-view">
+            <div id="project-view" class="hidden">
                 <div class="project-card">
                     <h2 id="project-title">Projekt Titel</h2>
                     <div class="project-info">
@@ -125,6 +135,14 @@
                     
                     <div class="submit-section">
                         <p class="responses-count">Abgegebene Bewertungen: <span id="responses-count">0</span>/9</p>
+                        
+                        <div class="lead-application">
+                            <label class="lead-checkbox">
+                                <input type="checkbox" id="lead-checkbox">
+                                <span>Ich möchte mich als Lead für dieses Projekt bewerben</span>
+                            </label>
+                        </div>
+                        
                         <button class="submit-btn" id="submit-btn" disabled>Bewertung abgeben</button>
                     </div>
                 </div>
@@ -173,6 +191,11 @@
                                 <span class="filter-result-name">Niedrige Eintrittshürde</span>
                                 <span class="filter-result-value" id="filter-2">0% Ja</span>
                             </div>
+                        </div>
+                        
+                        <div class="lead-applicants-display">
+                            <h4>Lead-Bewerbungen</h4>
+                            <p id="lead-applicants">Keine Bewerbungen</p>
                         </div>
                     </div>
                     <button class="next-btn" id="next-btn">Nächstes Projekt →</button>

@@ -131,13 +131,15 @@ class ScoringApp {
         this.currentResponses = 0;
         this.projectScores = [];
         this.projectFilters = [];
+        this.userName = '';
+        this.projectLeads = {};
         
         this.init();
     }
     
     init() {
         this.setupEventListeners();
-        this.loadProject(0);
+        this.showNameInput();
     }
     
     setupEventListeners() {
@@ -151,9 +153,33 @@ class ScoringApp {
             btn.addEventListener('click', (e) => this.handleFilterClick(e));
         });
         
+        document.getElementById('start-btn').addEventListener('click', () => this.handleNameSubmit());
         document.getElementById('submit-btn').addEventListener('click', () => this.handleSubmit());
         document.getElementById('next-btn').addEventListener('click', () => this.handleNext());
         document.getElementById('restart-btn').addEventListener('click', () => this.handleRestart());
+    }
+    
+    showNameInput() {
+        document.getElementById('name-input-view').classList.remove('hidden');
+        document.getElementById('project-view').classList.add('hidden');
+        document.querySelector('header').classList.add('hidden');
+    }
+    
+    handleNameSubmit() {
+        const nameInput = document.getElementById('user-name');
+        const name = nameInput.value.trim();
+        
+        if (!name) {
+            nameInput.style.borderColor = '#ff4444';
+            return;
+        }
+        
+        this.userName = name;
+        document.getElementById('name-input-view').classList.add('hidden');
+        document.getElementById('project-view').classList.remove('hidden');
+        document.querySelector('header').classList.remove('hidden');
+        
+        this.loadProject(0);
     }
     
     loadProject(index) {
@@ -171,6 +197,7 @@ class ScoringApp {
         
         this.resetRatings();
         this.resetFilters();
+        this.resetLeadCheckbox();
         this.currentResponses = 0;
         this.projectScores = [];
         this.projectFilters = [];
@@ -190,6 +217,10 @@ class ScoringApp {
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.classList.remove('selected-yes', 'selected-no');
         });
+    }
+    
+    resetLeadCheckbox() {
+        document.getElementById('lead-checkbox').checked = false;
     }
     
     handleFilterClick(e) {
@@ -229,11 +260,22 @@ class ScoringApp {
     handleSubmit() {
         this.projectScores.push([...this.currentRatings]);
         this.projectFilters.push([...this.currentFilters]);
+        
+        const leadCheckbox = document.getElementById('lead-checkbox');
+        if (leadCheckbox.checked) {
+            const projectId = this.currentProjectIndex;
+            if (!this.projectLeads[projectId]) {
+                this.projectLeads[projectId] = [];
+            }
+            this.projectLeads[projectId].push(this.userName);
+        }
+        
         this.currentResponses++;
         document.getElementById('responses-count').textContent = this.currentResponses;
         
         this.resetRatings();
         this.resetFilters();
+        this.resetLeadCheckbox();
         
         if (this.currentResponses >= this.responsesPerProject) {
             this.showResults();
@@ -258,12 +300,17 @@ class ScoringApp {
             document.getElementById(`filter-${i}`).textContent = `${result.percentage.toFixed(0)}% Ja (${result.yes}/${this.projectFilters.length})`;
         }
         
+        const leads = this.projectLeads[this.currentProjectIndex] || [];
+        const leadDisplay = leads.length > 0 ? leads.join(', ') : 'Keine Bewerbungen';
+        document.getElementById('lead-applicants').textContent = leadDisplay;
+        
         this.allScores.push({
             projectIndex: this.currentProjectIndex,
             title: projects[this.currentProjectIndex].title,
             averages: averages,
             totalScore: totalScore,
-            filterResults: filterResults
+            filterResults: filterResults,
+            leads: leads
         });
         
         document.getElementById('project-view').classList.add('hidden');
@@ -337,10 +384,17 @@ class ScoringApp {
             });
             detailsHTML += '</div>';
             
+            const leads = score.leads || [];
+            const leadDisplay = leads.length > 0 ? leads.join(', ') : 'Keine Bewerbungen';
+            
             resultItem.innerHTML = `
                 <h3>${index + 1}. ${score.title}</h3>
                 <div class="result-score">${score.totalScore.toFixed(1)} / 20</div>
                 ${detailsHTML}
+                <div class="result-leads">
+                    <span class="result-leads-label">Lead-Bewerbungen:</span>
+                    <span class="result-leads-value">${leadDisplay}</span>
+                </div>
             `;
             
             allResultsContainer.appendChild(resultItem);
@@ -356,11 +410,14 @@ class ScoringApp {
         this.projectScores = [];
         this.projectFilters = [];
         this.currentFilters = [null, null, null];
+        this.userName = '';
+        this.projectLeads = {};
         
         document.getElementById('final-results-view').classList.add('hidden');
-        document.getElementById('project-view').classList.remove('hidden');
+        document.getElementById('project-view').classList.add('hidden');
+        document.getElementById('name-input-view').classList.remove('hidden');
         
-        this.loadProject(0);
+        this.showNameInput();
     }
 }
 
