@@ -1,3 +1,18 @@
+// Firebase Konfiguration - BITTE MIT IHREN EIGENEN CREDENTIALS ERSETZEN
+const firebaseConfig = {
+    apiKey: "IHRE_API_KEY",
+    authDomain: "IHRE_AUTH_DOMAIN",
+    databaseURL: "IHRE_DATABASE_URL",
+    projectId: "IHRE_PROJECT_ID",
+    storageBucket: "IHRE_STORAGE_BUCKET",
+    messagingSenderId: "IHRE_MESSAGING_SENDER_ID",
+    appId: "IHRE_APP_ID"
+};
+
+// Firebase initialisieren
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
 const projects = [
     {
         title: "Bürger Leuchttürme",
@@ -135,6 +150,7 @@ class ScoringApp {
         this.projectLeads = {};
         this.userPriorities = {};
         this.allPriorities = [];
+        this.hasSubmitted = false;
         
         this.init();
     }
@@ -205,7 +221,11 @@ class ScoringApp {
         this.currentResponses = 0;
         this.projectScores = [];
         this.projectFilters = [];
+        this.hasSubmitted = false;
         document.getElementById('responses-count').textContent = '0';
+        
+        // Firebase Listener für Antworten
+        this.setupFirebaseListener(index);
     }
     
     resetRatings() {
@@ -225,6 +245,32 @@ class ScoringApp {
     
     resetLeadCheckbox() {
         document.getElementById('lead-checkbox').checked = false;
+    }
+    
+    setupFirebaseListener(projectIndex) {
+        const projectRef = database.ref(`projects/${projectIndex}/responses`);
+        
+        projectRef.on('value', (snapshot) => {
+            const responses = snapshot.val();
+            const responseCount = responses ? Object.keys(responses).length : 0;
+            
+            document.getElementById('responses-count').textContent = responseCount;
+            
+            // Wenn 9 Antworten da sind und Nutzer noch nicht abgestimmt hat, Button deaktivieren
+            if (responseCount >= 9 && !this.hasSubmitted) {
+                document.getElementById('submit-btn').disabled = true;
+            }
+            
+            // Wenn 9 Antworten da sind, Ergebnisse anzeigen
+            if (responseCount >= 9 && !document.getElementById('results-view').classList.contains('hidden')) {
+                this.showResultsFromFirebase(responses);
+            }
+            
+            // Wenn 9 Antworten da sind und wir noch im Projekt-View sind
+            if (responseCount >= 9 && !document.getElementById('project-view').classList.contains('hidden')) {
+                this.showResultsFromFirebase(responses);
+            }
+        });
     }
     
     handleFilterClick(e) {
@@ -262,28 +308,24 @@ class ScoringApp {
     }
     
     handleSubmit() {
-        this.projectScores.push([...this.currentRatings]);
-        this.projectFilters.push([...this.currentFilters]);
+        const response = {
+            userName: this.userName,
+            ratings: [...this.currentRatings],
+            filters: [...this.currentFilters],
+            leadApplication: document.getElementById('lead-checkbox').checked
+        };
         
-        const leadCheckbox = document.getElementById('lead-checkbox');
-        if (leadCheckbox.checked) {
-            const projectId = this.currentProjectIndex;
-            if (!this.projectLeads[projectId]) {
-                this.projectLeads[projectId] = [];
-            }
-            this.projectLeads[projectId].push(this.userName);
-        }
+        // Antwort in Firebase speichern
+        database.ref(`projects/${this.currentProjectIndex}/responses/${this.userName}`).set(response);
         
-        this.currentResponses++;
-        document.getElementById('responses-count').textContent = this.currentResponses;
+        this.hasSubmitted = true;
+        
+        // Button deaktivieren nach Abgabe
+        document.getElementById('submit-btn').disabled = true;
         
         this.resetRatings();
         this.resetFilters();
         this.resetLeadCheckbox();
-        
-        if (this.currentResponses >= this.responsesPerProject) {
-            this.showResults();
-        }
     }
     
     showResults() {
@@ -321,6 +363,45 @@ class ScoringApp {
         document.getElementById('results-view').classList.remove('hidden');
     }
     
+    showResultsFromFirebase(responses) {
+        const responseArray = Object.values(responses);
+        const ratings = responseArray.map(r => r.ratings);
+        const filters = responseArray.map(r => r.filters);
+        const leads = responseArray.filter(r => r.leadApplication).map(r => r.userName);
+        
+        const averages = this.calculateAveragesFromArray(ratings);
+        const totalScore = averages.reduce((a, b) => a + b, 0);
+        const filterResults = this.calculateFilterResultsFromArray(filters);
+        
+        document.getElementById('results-project-title').textContent = projects[this.currentProjectIndex].title;
+        document.getElementById('total-score').textContent = totalScore.toFixed(1);
+        
+        for (let i = 0; i < 4; i++) {
+            document.getElementById(`dim-${i}`).textContent = averages[i].toFixed(1);
+        }
+        
+        const filterNames = ['Zeithorizont max. 2 Jahre', 'Klarer Scope', 'Niedrige Eintrittshürde'];
+        for (let i = 0; i < 3; i++) {
+            const result = filterResults[filterNames[i]];
+            document.getElementById(`filter-${i}`).textContent = `${result.percentage.toFixed(0)}% Ja (${result.yes}/${filters.length})`;
+        }
+        
+        const leadDisplay = leads.length > 0 ? leads.join(', ') : 'Keine Bewerbungen';
+        document.getElementById('lead-applicants').textContent = leadDisplay;
+        
+        this.allScores.push({
+            projectIndex: this.currentProjectIndex,
+            title: projects[this.currentProjectIndex].title,
+            averages: averages,
+            totalScore: totalScore,
+            filterResults: filterResults,
+            leads: leads
+        });
+        
+        document.getElementById('project-view').classList.add('hidden');
+        document.getElementById('results-view').classList.remove('hidden');
+    }
+    
     calculateFilterResults() {
         const filterNames = ['Zeithorizont max. 2 Jahre', 'Klarer Scope', 'Niedrige Eintrittshürde'];
         const results = {};
@@ -332,6 +413,23 @@ class ScoringApp {
                 yes: yesCount,
                 no: noCount,
                 percentage: (yesCount / this.projectFilters.length) * 100
+            };
+        }
+        
+        return results;
+    }
+    
+    calculateFilterResultsFromArray(filters) {
+        const filterNames = ['Zeithorizont max. 2 Jahre', 'Klarer Scope', 'Niedrige Eintrittshürde'];
+        const results = {};
+        
+        for (let i = 0; i < 3; i++) {
+            const yesCount = filters.filter(f => f[i] === 'yes').length;
+            const noCount = filters.filter(f => f[i] === 'no').length;
+            results[filterNames[i]] = {
+                yes: yesCount,
+                no: noCount,
+                percentage: (yesCount / filters.length) * 100
             };
         }
         
@@ -350,6 +448,18 @@ class ScoringApp {
         return sums.map(sum => sum / this.projectScores.length);
     }
     
+    calculateAveragesFromArray(ratings) {
+        const sums = [0, 0, 0, 0];
+        
+        ratings.forEach(scores => {
+            for (let i = 0; i < 4; i++) {
+                sums[i] += scores[i];
+            }
+        });
+        
+        return sums.map(sum => sum / ratings.length);
+    }
+    
     handleNext() {
         this.currentProjectIndex++;
         
@@ -358,6 +468,7 @@ class ScoringApp {
         } else {
             document.getElementById('results-view').classList.add('hidden');
             document.getElementById('project-view').classList.remove('hidden');
+            this.hasSubmitted = false;
             this.loadProject(this.currentProjectIndex);
         }
     }
@@ -366,45 +477,75 @@ class ScoringApp {
         document.getElementById('results-view').classList.add('hidden');
         document.getElementById('final-results-view').classList.remove('hidden');
         
-        const allResultsContainer = document.getElementById('all-results');
-        allResultsContainer.innerHTML = '';
-        
-        const sortedScores = [...this.allScores].sort((a, b) => b.totalScore - a.totalScore);
-        
-        sortedScores.forEach((score, index) => {
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
+        // Daten aus Firebase laden
+        database.ref('projects').once('value', (snapshot) => {
+            const projectsData = snapshot.val();
+            const allResultsContainer = document.getElementById('all-results');
+            allResultsContainer.innerHTML = '';
             
-            const dimensionNames = ['Impact', 'Machbarkeit', 'Werte-Tiefe', 'Hebelwirkung'];
+            this.allScores = [];
             
-            let detailsHTML = '<div class="result-details">';
-            score.averages.forEach((avg, i) => {
-                detailsHTML += `
-                    <div class="result-detail">
-                        <span>${dimensionNames[i]}</span>
-                        <span>${avg.toFixed(1)}</span>
+            projects.forEach((project, index) => {
+                if (projectsData && projectsData[index] && projectsData[index].responses) {
+                    const responses = projectsData[index].responses;
+                    const responseArray = Object.values(responses);
+                    
+                    if (responseArray.length >= 9) {
+                        const ratings = responseArray.map(r => r.ratings);
+                        const filters = responseArray.map(r => r.filters);
+                        const leads = responseArray.filter(r => r.leadApplication).map(r => r.userName);
+                        
+                        const averages = this.calculateAveragesFromArray(ratings);
+                        const totalScore = averages.reduce((a, b) => a + b, 0);
+                        
+                        this.allScores.push({
+                            projectIndex: index,
+                            title: project.title,
+                            averages: averages,
+                            totalScore: totalScore,
+                            leads: leads
+                        });
+                    }
+                }
+            });
+            
+            const sortedScores = [...this.allScores].sort((a, b) => b.totalScore - a.totalScore);
+            
+            sortedScores.forEach((score, index) => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                
+                const dimensionNames = ['Impact', 'Machbarkeit', 'Werte-Tiefe', 'Hebelwirkung'];
+                
+                let detailsHTML = '<div class="result-details">';
+                score.averages.forEach((avg, i) => {
+                    detailsHTML += `
+                        <div class="result-detail">
+                            <span>${dimensionNames[i]}</span>
+                            <span>${avg.toFixed(1)}</span>
+                        </div>
+                    `;
+                });
+                detailsHTML += '</div>';
+                
+                const leads = score.leads || [];
+                const leadDisplay = leads.length > 0 ? leads.join(', ') : 'Keine Bewerbungen';
+                
+                resultItem.innerHTML = `
+                    <h3>${index + 1}. ${score.title}</h3>
+                    <div class="result-score">${score.totalScore.toFixed(1)} / 20</div>
+                    ${detailsHTML}
+                    <div class="result-leads">
+                        <span class="result-leads-label">Lead-Bewerbungen:</span>
+                        <span class="result-leads-value">${leadDisplay}</span>
                     </div>
                 `;
+                
+                allResultsContainer.appendChild(resultItem);
             });
-            detailsHTML += '</div>';
             
-            const leads = score.leads || [];
-            const leadDisplay = leads.length > 0 ? leads.join(', ') : 'Keine Bewerbungen';
-            
-            resultItem.innerHTML = `
-                <h3>${index + 1}. ${score.title}</h3>
-                <div class="result-score">${score.totalScore.toFixed(1)} / 20</div>
-                ${detailsHTML}
-                <div class="result-leads">
-                    <span class="result-leads-label">Lead-Bewerbungen:</span>
-                    <span class="result-leads-value">${leadDisplay}</span>
-                </div>
-            `;
-            
-            allResultsContainer.appendChild(resultItem);
+            document.getElementById('progress-fill').style.width = '100%';
         });
-        
-        document.getElementById('progress-fill').style.width = '100%';
     }
     
     handleRestart() {
@@ -479,7 +620,8 @@ class ScoringApp {
             priorities: selectedProjects
         };
         
-        this.allPriorities.push(this.userPriorities);
+        // In Firebase speichern
+        database.ref(`priorities/${this.userName}`).set(this.userPriorities);
         
         this.showPriorityOverview();
     }
@@ -491,37 +633,43 @@ class ScoringApp {
         const overviewContainer = document.getElementById('priority-overview');
         overviewContainer.innerHTML = '';
         
-        projects.forEach((project, projectIndex) => {
-            const priorityItem = document.createElement('div');
-            priorityItem.className = 'priority-overview-item';
+        // Prioritäten aus Firebase laden
+        database.ref('priorities').once('value', (snapshot) => {
+            const prioritiesData = snapshot.val();
+            const allPriorities = prioritiesData ? Object.values(prioritiesData) : [];
             
-            const rankings = { 1: [], 2: [], 3: [], 4: [], 5: [] };
-            
-            this.allPriorities.forEach(userPriority => {
-                const priority = userPriority.priorities.find(p => p.projectIndex === projectIndex);
-                if (priority) {
-                    rankings[priority.rank].push(userPriority.userName);
+            projects.forEach((project, projectIndex) => {
+                const priorityItem = document.createElement('div');
+                priorityItem.className = 'priority-overview-item';
+                
+                const rankings = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+                
+                allPriorities.forEach(userPriority => {
+                    const priority = userPriority.priorities.find(p => p.projectIndex === projectIndex);
+                    if (priority) {
+                        rankings[priority.rank].push(userPriority.userName);
+                    }
+                });
+                
+                let rankingsHTML = '<div class="priority-rankings">';
+                for (let rank = 1; rank <= 5; rank++) {
+                    const names = rankings[rank].length > 0 ? rankings[rank].join(', ') : 'Keine';
+                    rankingsHTML += `
+                        <div class="priority-ranking">
+                            <span class="priority-ranking-label">Prio ${rank}</span>
+                            <span class="priority-ranking-names">${names}</span>
+                        </div>
+                    `;
                 }
-            });
-            
-            let rankingsHTML = '<div class="priority-rankings">';
-            for (let rank = 1; rank <= 5; rank++) {
-                const names = rankings[rank].length > 0 ? rankings[rank].join(', ') : 'Keine';
-                rankingsHTML += `
-                    <div class="priority-ranking">
-                        <span class="priority-ranking-label">Prio ${rank}</span>
-                        <span class="priority-ranking-names">${names}</span>
-                    </div>
+                rankingsHTML += '</div>';
+                
+                priorityItem.innerHTML = `
+                    <h3>${project.title}</h3>
+                    ${rankingsHTML}
                 `;
-            }
-            rankingsHTML += '</div>';
-            
-            priorityItem.innerHTML = `
-                <h3>${project.title}</h3>
-                ${rankingsHTML}
-            `;
-            
-            overviewContainer.appendChild(priorityItem);
+                
+                overviewContainer.appendChild(priorityItem);
+            });
         });
     }
 }
