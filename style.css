@@ -615,6 +615,114 @@ header.hidden {
     display: none;
 }
 
+.prioritization-card {
+    background: #ffffff;
+    border-radius: 2px;
+    padding: 50px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+}
+
+.prioritization-card h2 {
+    color: #1a1a2e;
+    margin-bottom: 15px;
+    font-size: 1.6em;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+.prioritization-instruction {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 0.95em;
+}
+
+.priority-slots {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.priority-slot {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: #fafafa;
+    border-radius: 2px;
+    border-left: 3px solid #c9a962;
+}
+
+.priority-label {
+    min-width: 80px;
+    font-size: 1em;
+    font-weight: 500;
+    color: #1a1a2e;
+}
+
+.priority-select {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    font-size: 0.95em;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #ffffff;
+    color: #333;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.priority-select:focus {
+    border-color: #c9a962;
+}
+
+.priority-overview-item {
+    background: #fafafa;
+    padding: 25px;
+    border-radius: 2px;
+    border-left: 3px solid #c9a962;
+    margin-bottom: 20px;
+}
+
+.priority-overview-item h3 {
+    color: #1a1a2e;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    font-weight: 400;
+}
+
+.priority-rankings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+.priority-ranking {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 2px;
+    text-align: center;
+    border: 1px solid #e8e8e8;
+}
+
+.priority-ranking-label {
+    display: block;
+    color: #888;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.priority-ranking-names {
+    display: block;
+    font-size: 0.95em;
+    font-weight: 400;
+    color: #1a1a2e;
+    line-height: 1.4;
+}
+
 @media (max-width: 768px) {
     body {
         padding: 20px 15px;

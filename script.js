@@ -133,6 +133,8 @@ class ScoringApp {
         this.projectFilters = [];
         this.userName = '';
         this.projectLeads = {};
+        this.userPriorities = {};
+        this.allPriorities = [];
         
         this.init();
     }
@@ -156,6 +158,8 @@ class ScoringApp {
         document.getElementById('start-btn').addEventListener('click', () => this.handleNameSubmit());
         document.getElementById('submit-btn').addEventListener('click', () => this.handleSubmit());
         document.getElementById('next-btn').addEventListener('click', () => this.handleNext());
+        document.getElementById('to-prioritization-btn').addEventListener('click', () => this.handleToPrioritization());
+        document.getElementById('submit-prioritization-btn').addEventListener('click', () => this.handlePrioritizationSubmit());
         document.getElementById('restart-btn').addEventListener('click', () => this.handleRestart());
     }
     
@@ -412,12 +416,113 @@ class ScoringApp {
         this.currentFilters = [null, null, null];
         this.userName = '';
         this.projectLeads = {};
+        this.userPriorities = {};
+        this.allPriorities = [];
         
         document.getElementById('final-results-view').classList.add('hidden');
         document.getElementById('project-view').classList.add('hidden');
         document.getElementById('name-input-view').classList.remove('hidden');
         
         this.showNameInput();
+    }
+    
+    handleToPrioritization() {
+        document.getElementById('final-results-view').classList.add('hidden');
+        document.getElementById('prioritization-view').classList.remove('hidden');
+        this.populatePrioritySelects();
+    }
+    
+    populatePrioritySelects() {
+        const selects = document.querySelectorAll('.priority-select');
+        selects.forEach(select => {
+            const currentRank = select.dataset.rank;
+            select.innerHTML = '<option value="">Projekt wählen...</option>';
+            projects.forEach((project, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = project.title;
+                select.appendChild(option);
+            });
+        });
+    }
+    
+    handlePrioritizationSubmit() {
+        const selects = document.querySelectorAll('.priority-select');
+        const selectedProjects = [];
+        const selections = new Set();
+        
+        selects.forEach(select => {
+            const value = select.value;
+            if (value === '') {
+                alert('Bitte wählen Sie für alle 5 Prioritäten ein Projekt aus.');
+                return;
+            }
+            
+            if (selections.has(value)) {
+                alert('Bitte wählen Sie für jede Priorität ein anderes Projekt.');
+                return;
+            }
+            
+            selections.add(value);
+            selectedProjects.push({
+                rank: parseInt(select.dataset.rank),
+                projectIndex: parseInt(value)
+            });
+        });
+        
+        if (selectedProjects.length !== 5) {
+            return;
+        }
+        
+        this.userPriorities = {
+            userName: this.userName,
+            priorities: selectedProjects
+        };
+        
+        this.allPriorities.push(this.userPriorities);
+        
+        this.showPriorityOverview();
+    }
+    
+    showPriorityOverview() {
+        document.getElementById('prioritization-view').classList.add('hidden');
+        document.getElementById('priority-overview-view').classList.remove('hidden');
+        
+        const overviewContainer = document.getElementById('priority-overview');
+        overviewContainer.innerHTML = '';
+        
+        projects.forEach((project, projectIndex) => {
+            const priorityItem = document.createElement('div');
+            priorityItem.className = 'priority-overview-item';
+            
+            const rankings = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+            
+            this.allPriorities.forEach(userPriority => {
+                const priority = userPriority.priorities.find(p => p.projectIndex === projectIndex);
+                if (priority) {
+                    rankings[priority.rank].push(userPriority.userName);
+                }
+            });
+            
+            let rankingsHTML = '<div class="priority-rankings">';
+            for (let rank = 1; rank <= 5; rank++) {
+                const names = rankings[rank].length > 0 ? rankings[rank].join(', ') : 'Keine';
+                rankingsHTML += `
+                    <div class="priority-ranking">
+                        <span class="priority-ranking-label">Prio ${rank}</span>
+                        <span class="priority-ranking-names">${names}</span>
+                    </div>
+                `;
+            }
+            rankingsHTML += '</div>';
+            
+            priorityItem.innerHTML = `
+                <h3>${project.title}</h3>
+                ${rankingsHTML}
+            `;
+            
+            overviewContainer.appendChild(priorityItem);
+        });
     }
 }
 

@@ -207,6 +207,58 @@
                 <div class="final-results-card">
                     <h2>Alle Ergebnisse</h2>
                     <div id="all-results"></div>
+                    <button class="next-btn" id="to-prioritization-btn">Zur Priorisierung →</button>
+                </div>
+            </div>
+            
+            <!-- Prioritization View -->
+            <div id="prioritization-view" class="hidden">
+                <div class="prioritization-card">
+                    <h2>Wählen Sie Ihre Top 5 Projekte</h2>
+                    <p class="prioritization-instruction">Ordnen Sie Ihre 5 wichtigsten Projekte von 1 (höchste Priorität) bis 5 zu:</p>
+                    
+                    <div class="priority-slots">
+                        <div class="priority-slot">
+                            <span class="priority-label">Prio 1</span>
+                            <select class="priority-select" data-rank="1">
+                                <option value="">Projekt wählen...</option>
+                            </select>
+                        </div>
+                        <div class="priority-slot">
+                            <span class="priority-label">Prio 2</span>
+                            <select class="priority-select" data-rank="2">
+                                <option value="">Projekt wählen...</option>
+                            </select>
+                        </div>
+                        <div class="priority-slot">
+                            <span class="priority-label">Prio 3</span>
+                            <select class="priority-select" data-rank="3">
+                                <option value="">Projekt wählen...</option>
+                            </select>
+                        </div>
+                        <div class="priority-slot">
+                            <span class="priority-label">Prio 4</span>
+                            <select class="priority-select" data-rank="4">
+                                <option value="">Projekt wählen...</option>
+                            </select>
+                        </div>
+                        <div class="priority-slot">
+                            <span class="priority-label">Prio 5</span>
+                            <select class="priority-select" data-rank="5">
+                                <option value="">Projekt wählen...</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="submit-btn" id="submit-prioritization-btn">Priorisierung speichern</button>
+                </div>
+            </div>
+            
+            <!-- Priority Overview View -->
+            <div id="priority-overview-view" class="hidden">
+                <div class="final-results-card">
+                    <h2>Priorisierungs-Übersicht</h2>
+                    <div id="priority-overview"></div>
                     <button class="restart-btn" id="restart-btn">Neustart</button>
                 </div>
             </div>
