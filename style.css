@@ -105,6 +105,66 @@ h1 {
     letter-spacing: 0.3px;
 }
 
+.filter-section {
+    margin-bottom: 40px;
+    padding: 30px;
+    background: #f5f5f0;
+    border-radius: 2px;
+    border-left: 3px solid #c9a962;
+}
+
+.filter-item {
+    margin-bottom: 25px;
+}
+
+.filter-item:last-child {
+    margin-bottom: 0;
+}
+
+.filter-question {
+    color: #1a1a2e;
+    font-size: 1em;
+    font-weight: 500;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.filter-btn {
+    background: #ffffff;
+    color: #1a1a2e;
+    border: 1px solid #e0e0e0;
+    padding: 10px 30px;
+    font-size: 0.9em;
+    font-weight: 400;
+    letter-spacing: 1px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background: #1a1a2e;
+    color: #c9a962;
+    border-color: #1a1a2e;
+}
+
+.filter-btn.selected-yes {
+    background: #c9a962;
+    color: #ffffff;
+    border-color: #c9a962;
+}
+
+.filter-btn.selected-no {
+    background: #1a1a2e;
+    color: #ffffff;
+    border-color: #1a1a2e;
+}
+
 .dimension {
     margin-bottom: 35px;
     padding: 25px;
@@ -287,6 +347,43 @@ h1 {
     font-size: 2.2em;
     font-weight: 300;
     color: #1a1a2e;
+}
+
+.filter-results {
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.filter-results h4 {
+    color: #1a1a2e;
+    font-size: 1.1em;
+    font-weight: 500;
+    margin-bottom: 15px;
+    letter-spacing: 0.5px;
+}
+
+.filter-result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.filter-result-item:last-child {
+    border-bottom: none;
+}
+
+.filter-result-name {
+    color: #666;
+    font-size: 0.95em;
+}
+
+.filter-result-value {
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #c9a962;
 }
 
 .next-btn, .restart-btn {

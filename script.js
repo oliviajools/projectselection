@@ -125,10 +125,12 @@ class ScoringApp {
     constructor() {
         this.currentProjectIndex = 0;
         this.currentRatings = [0, 0, 0, 0, 0];
+        this.currentFilters = [null, null, null];
         this.allScores = [];
         this.responsesPerProject = 9;
         this.currentResponses = 0;
         this.projectScores = [];
+        this.projectFilters = [];
         
         this.init();
     }
@@ -142,6 +144,11 @@ class ScoringApp {
         const ratingBtns = document.querySelectorAll('.rating-btn');
         ratingBtns.forEach(btn => {
             btn.addEventListener('click', (e) => this.handleRatingClick(e));
+        });
+        
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => this.handleFilterClick(e));
         });
         
         document.getElementById('submit-btn').addEventListener('click', () => this.handleSubmit());
@@ -163,8 +170,10 @@ class ScoringApp {
         document.getElementById('progress-fill').style.width = `${((index) / projects.length) * 100}%`;
         
         this.resetRatings();
+        this.resetFilters();
         this.currentResponses = 0;
         this.projectScores = [];
+        this.projectFilters = [];
         document.getElementById('responses-count').textContent = '0';
     }
     
@@ -174,6 +183,27 @@ class ScoringApp {
             btn.classList.remove('selected');
         });
         document.getElementById('submit-btn').disabled = true;
+    }
+    
+    resetFilters() {
+        this.currentFilters = [null, null, null];
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('selected-yes', 'selected-no');
+        });
+    }
+    
+    handleFilterClick(e) {
+        const btn = e.target;
+        const filterIndex = parseInt(btn.dataset.filter);
+        const value = btn.dataset.value;
+        
+        const buttonsInFilter = document.querySelectorAll(`.filter-btn[data-filter="${filterIndex}"]`);
+        buttonsInFilter.forEach(b => b.classList.remove('selected-yes', 'selected-no'));
+        
+        btn.classList.add(value === 'yes' ? 'selected-yes' : 'selected-no');
+        this.currentFilters[filterIndex] = value;
+        
+        this.updateSubmitButton();
     }
     
     handleRatingClick(e) {
@@ -192,15 +222,18 @@ class ScoringApp {
     
     updateSubmitButton() {
         const allRated = this.currentRatings.every(rating => rating !== 0);
-        document.getElementById('submit-btn').disabled = !allRated;
+        const allFiltered = this.currentFilters.every(filter => filter !== null);
+        document.getElementById('submit-btn').disabled = !(allRated && allFiltered);
     }
     
     handleSubmit() {
         this.projectScores.push([...this.currentRatings]);
+        this.projectFilters.push([...this.currentFilters]);
         this.currentResponses++;
         document.getElementById('responses-count').textContent = this.currentResponses;
         
         this.resetRatings();
+        this.resetFilters();
         
         if (this.currentResponses >= this.responsesPerProject) {
             this.showResults();
@@ -210,6 +243,7 @@ class ScoringApp {
     showResults() {
         const averages = this.calculateAverages();
         const totalScore = averages.reduce((a, b) => a + b, 0);
+        const filterResults = this.calculateFilterResults();
         
         document.getElementById('results-project-title').textContent = projects[this.currentProjectIndex].title;
         document.getElementById('total-score').textContent = totalScore.toFixed(1);
@@ -218,15 +252,39 @@ class ScoringApp {
             document.getElementById(`dim-${i}`).textContent = averages[i].toFixed(1);
         }
         
+        const filterNames = ['Zeithorizont max. 2 Jahre', 'Klarer Scope', 'Niedrige Eintrittshürde'];
+        for (let i = 0; i < 3; i++) {
+            const result = filterResults[filterNames[i]];
+            document.getElementById(`filter-${i}`).textContent = `${result.percentage.toFixed(0)}% Ja (${result.yes}/${this.projectFilters.length})`;
+        }
+        
         this.allScores.push({
             projectIndex: this.currentProjectIndex,
             title: projects[this.currentProjectIndex].title,
             averages: averages,
-            totalScore: totalScore
+            totalScore: totalScore,
+            filterResults: filterResults
         });
         
         document.getElementById('project-view').classList.add('hidden');
         document.getElementById('results-view').classList.remove('hidden');
+    }
+    
+    calculateFilterResults() {
+        const filterNames = ['Zeithorizont max. 2 Jahre', 'Klarer Scope', 'Niedrige Eintrittshürde'];
+        const results = {};
+        
+        for (let i = 0; i < 3; i++) {
+            const yesCount = this.projectFilters.filter(f => f[i] === 'yes').length;
+            const noCount = this.projectFilters.filter(f => f[i] === 'no').length;
+            results[filterNames[i]] = {
+                yes: yesCount,
+                no: noCount,
+                percentage: (yesCount / this.projectFilters.length) * 100
+            };
+        }
+        
+        return results;
     }
     
     calculateAverages() {
@@ -296,6 +354,8 @@ class ScoringApp {
         this.allScores = [];
         this.currentResponses = 0;
         this.projectScores = [];
+        this.projectFilters = [];
+        this.currentFilters = [null, null, null];
         
         document.getElementById('final-results-view').classList.add('hidden');
         document.getElementById('project-view').classList.remove('hidden');

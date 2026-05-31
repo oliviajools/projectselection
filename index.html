@@ -31,6 +31,35 @@
                 </div>
                 
                 <div class="scoring-section">
+                    <h3>Quick Fix Filter</h3>
+                    <p class="scoring-instruction">Bitte prüfen Sie, ob dieses Projekt die Kriterien für Quick Fix Projekte erfüllt:</p>
+                    
+                    <div class="filter-section">
+                        <div class="filter-item">
+                            <p class="filter-question">1. Zeithorizont max. 2 Jahre bis zu sichtbarem Ergebnis</p>
+                            <div class="filter-buttons">
+                                <button class="filter-btn" data-filter="0" data-value="yes">Ja</button>
+                                <button class="filter-btn" data-filter="0" data-value="no">Nein</button>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <p class="filter-question">2. Klar abgrenzbarer Scope – ein "fertig"-Zustand ist definierbar</p>
+                            <div class="filter-buttons">
+                                <button class="filter-btn" data-filter="1" data-value="yes">Ja</button>
+                                <button class="filter-btn" data-filter="1" data-value="no">Nein</button>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <p class="filter-question">3. Niedrige Eintrittshürde – wir können in unter 4 Wochen starten</p>
+                            <div class="filter-buttons">
+                                <button class="filter-btn" data-filter="2" data-value="yes">Ja</button>
+                                <button class="filter-btn" data-filter="2" data-value="no">Nein</button>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <h3>Scoring (1-5 Punkte)</h3>
                     <p class="scoring-instruction">Bitte bewerten Sie dieses Projekt in den 5 Dimensionen:</p>
                     
@@ -146,6 +175,22 @@
                             <div class="dimension-score">
                                 <span class="dim-name">Sichtbarkeit</span>
                                 <span class="dim-value" id="dim-4">0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="filter-results">
+                            <h4>Quick Fix Filter Ergebnisse</h4>
+                            <div class="filter-result-item">
+                                <span class="filter-result-name">Zeithorizont max. 2 Jahre</span>
+                                <span class="filter-result-value" id="filter-0">0% Ja</span>
+                            </div>
+                            <div class="filter-result-item">
+                                <span class="filter-result-name">Klarer Scope</span>
+                                <span class="filter-result-value" id="filter-1">0% Ja</span>
+                            </div>
+                            <div class="filter-result-item">
+                                <span class="filter-result-name">Niedrige Eintrittshürde</span>
+                                <span class="filter-result-value" id="filter-2">0% Ja</span>
                             </div>
                         </div>
                     </div>
