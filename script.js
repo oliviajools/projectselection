@@ -124,7 +124,7 @@ const projects = [
 class ScoringApp {
     constructor() {
         this.currentProjectIndex = 0;
-        this.currentRatings = [0, 0, 0, 0, 0];
+        this.currentRatings = [0, 0, 0, 0];
         this.currentFilters = [null, null, null];
         this.allScores = [];
         this.responsesPerProject = 9;
@@ -178,7 +178,7 @@ class ScoringApp {
     }
     
     resetRatings() {
-        this.currentRatings = [0, 0, 0, 0, 0];
+        this.currentRatings = [0, 0, 0, 0];
         document.querySelectorAll('.rating-btn').forEach(btn => {
             btn.classList.remove('selected');
         });
@@ -248,7 +248,7 @@ class ScoringApp {
         document.getElementById('results-project-title').textContent = projects[this.currentProjectIndex].title;
         document.getElementById('total-score').textContent = totalScore.toFixed(1);
         
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 4; i++) {
             document.getElementById(`dim-${i}`).textContent = averages[i].toFixed(1);
         }
         
@@ -288,10 +288,10 @@ class ScoringApp {
     }
     
     calculateAverages() {
-        const sums = [0, 0, 0, 0, 0];
+        const sums = [0, 0, 0, 0];
         
         this.projectScores.forEach(scores => {
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 4; i++) {
                 sums[i] += scores[i];
             }
         });
@@ -324,7 +324,7 @@ class ScoringApp {
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
             
-            const dimensionNames = ['Impact', 'Machbarkeit', 'Werte-Tiefe', 'Hebelwirkung', 'Sichtbarkeit'];
+            const dimensionNames = ['Impact', 'Machbarkeit', 'Werte-Tiefe', 'Hebelwirkung'];
             
             let detailsHTML = '<div class="result-details">';
             score.averages.forEach((avg, i) => {
@@ -339,7 +339,7 @@ class ScoringApp {
             
             resultItem.innerHTML = `
                 <h3>${index + 1}. ${score.title}</h3>
-                <div class="result-score">${score.totalScore.toFixed(1)} / 25</div>
+                <div class="result-score">${score.totalScore.toFixed(1)} / 20</div>
                 ${detailsHTML}
             `;
             
