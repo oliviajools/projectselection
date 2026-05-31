@@ -1,12 +1,13 @@
-// Firebase Konfiguration - BITTE MIT IHREN EIGENEN CREDENTIALS ERSETZEN
+// Firebase Konfiguration
 const firebaseConfig = {
-    apiKey: "IHRE_API_KEY",
-    authDomain: "IHRE_AUTH_DOMAIN",
-    databaseURL: "IHRE_DATABASE_URL",
-    projectId: "IHRE_PROJECT_ID",
-    storageBucket: "IHRE_STORAGE_BUCKET",
-    messagingSenderId: "IHRE_MESSAGING_SENDER_ID",
-    appId: "IHRE_APP_ID"
+    apiKey: "AIzaSyAX_niB6DoNVWWGIJGDZ3dLrnhMTdCCdJg",
+    authDomain: "projectscoring-ccf71.firebaseapp.com",
+    databaseURL: "https://projectscoring-ccf71-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "projectscoring-ccf71",
+    storageBucket: "projectscoring-ccf71.firebasestorage.app",
+    messagingSenderId: "224459293015",
+    appId: "1:224459293015:web:e1ad9afe1b882ae0523e12",
+    measurementId: "G-XVM8LH5YR0"
 };
 
 // Firebase initialisieren
