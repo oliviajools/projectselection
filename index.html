@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H36 Projekt-Score</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>H36 Projekt-Score</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p class="project-counter">Projekt <span id="current-project">1</span> von 15</p>
+        </header>
+        
+        <main id="main-content">
+            <!-- Project View -->
+            <div id="project-view">
+                <div class="project-card">
+                    <h2 id="project-title">Projekt Titel</h2>
+                    <div class="project-info">
+                        <p><strong>Eingereicht von:</strong> <span id="project-submitter"></span></p>
+                        <p><strong>Problem:</strong> <span id="project-problem"></span></p>
+                        <p><strong>Lösungsansatz:</strong> <span id="project-solution"></span></p>
+                        <p><strong>Format:</strong> <span id="project-format"></span></p>
+                        <p><strong>Zielgruppe:</strong> <span id="project-target"></span></p>
+                    </div>
+                </div>
+                
+                <div class="scoring-section">
+                    <h3>Scoring (1-5 Punkte)</h3>
+                    <p class="scoring-instruction">Bitte bewerten Sie dieses Projekt in den 5 Dimensionen:</p>
+                    
+                    <div class="dimension" id="dimension-0">
+                        <div class="dimension-header">
+                            <h4>1. Impact</h4>
+                            <p class="dimension-desc">Wie spürbar ist die Veränderung für wie viele Menschen?</p>
+                            <span class="dimension-scale">1 = Nische → 5 = Breite Wirkung</span>
+                        </div>
+                        <div class="rating-buttons">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                        </div>
+                    </div>
+                    
+                    <div class="dimension" id="dimension-1">
+                        <div class="dimension-header">
+                            <h4>2. Machbarkeit</h4>
+                            <p class="dimension-desc">Können wir das mit unseren Mitteln (Zeit, Skill, Netzwerk) realistisch umsetzen?</p>
+                            <span class="dimension-scale">1 = Sehr schwierig → 5 = Direkt machbar</span>
+                        </div>
+                        <div class="rating-buttons">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                        </div>
+                    </div>
+                    
+                    <div class="dimension" id="dimension-2">
+                        <div class="dimension-header">
+                            <h4>3. Werte-Tiefe</h4>
+                            <p class="dimension-desc">Wie zentral ist das für unsere Mission, nicht nur kompatibel?</p>
+                            <span class="dimension-scale">1 = Randthema → 5 = Kernanliegen</span>
+                        </div>
+                        <div class="rating-buttons">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                        </div>
+                    </div>
+                    
+                    <div class="dimension" id="dimension-3">
+                        <div class="dimension-header">
+                            <h4>4. Hebelwirkung</h4>
+                            <p class="dimension-desc">Schafft es Folgewirkung (Präzedenz, Plattform, Lerneffekte)?</p>
+                            <span class="dimension-scale">1 = Einmaleffekt → 5 = Multiplikator</span>
+                        </div>
+                        <div class="rating-buttons">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                        </div>
+                    </div>
+                    
+                    <div class="dimension" id="dimension-4">
+                        <div class="dimension-header">
+                            <h4>5. Sichtbarkeit</h4>
+                            <p class="dimension-desc">Kann es H36 als Akteur etablieren?</p>
+                            <span class="dimension-scale">1 = Unsichtbar → 5 = Hoch öffentlich</span>
+                        </div>
+                        <div class="rating-buttons">
+                            <button class="rating-btn" data-value="1">1</button>
+                            <button class="rating-btn" data-value="2">2</button>
+                            <button class="rating-btn" data-value="3">3</button>
+                            <button class="rating-btn" data-value="4">4</button>
+                            <button class="rating-btn" data-value="5">5</button>
+                        </div>
+                    </div>
+                    
+                    <div class="submit-section">
+                        <p class="responses-count">Abgegebene Bewertungen: <span id="responses-count">0</span>/9</p>
+                        <button class="submit-btn" id="submit-btn" disabled>Bewertung abgeben</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results View -->
+            <div id="results-view" class="hidden">
+                <div class="results-card">
+                    <h2>Ergebnis: <span id="results-project-title"></span></h2>
+                    <div class="score-summary">
+                        <div class="total-score">
+                            <span class="score-label">Gesamtscore</span>
+                            <span class="score-value" id="total-score">0</span>
+                            <span class="score-max">/ 25</span>
+                        </div>
+                        <div class="dimension-scores">
+                            <div class="dimension-score">
+                                <span class="dim-name">Impact</span>
+                                <span class="dim-value" id="dim-0">0</span>
+                            </div>
+                            <div class="dimension-score">
+                                <span class="dim-name">Machbarkeit</span>
+                                <span class="dim-value" id="dim-1">0</span>
+                            </div>
+                            <div class="dimension-score">
+                                <span class="dim-name">Werte-Tiefe</span>
+                                <span class="dim-value" id="dim-2">0</span>
+                            </div>
+                            <div class="dimension-score">
+                                <span class="dim-name">Hebelwirkung</span>
+                                <span class="dim-value" id="dim-3">0</span>
+                            </div>
+                            <div class="dimension-score">
+                                <span class="dim-name">Sichtbarkeit</span>
+                                <span class="dim-value" id="dim-4">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="next-btn" id="next-btn">Nächstes Projekt →</button>
+                </div>
+            </div>
+            
+            <!-- Final Results View -->
+            <div id="final-results-view" class="hidden">
+                <div class="final-results-card">
+                    <h2>Alle Ergebnisse</h2>
+                    <div id="all-results"></div>
+                    <button class="restart-btn" id="restart-btn">Neustart</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
